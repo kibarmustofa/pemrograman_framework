@@ -14,7 +14,8 @@ type ProductType =
 const kategori = () => {
     // const [isLogin, setIsLogin] = useState(false);
     // const { push } = useRouter();
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<ProductType[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     // useEffect(() => {
     //     if (!isLogin) {
@@ -22,21 +23,33 @@ const kategori = () => {
     //     }
     // },[]);
 
+    const fetchProducts = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch("/api/produk");
+            const responsedata = await response.json();
+            setProducts(responsedata.data);
+        } catch (error) {
+            console.error("Error fetching produk:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        fetch("/api/produk")
-            .then((response) => response.json())
-            .then((responsedata) => {
-                //console.log("Data produk:", responsedata.data);
-                setProducts(responsedata.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching produk:", error);
-            });
+        fetchProducts();
     }, []);
+
+    const handleRefresh = () => {
+        fetchProducts();
+    };
 
     return (
     <div>
         <h1>Daftar Produk</h1>
+        <button onClick={handleRefresh} disabled={isLoading}>
+            {isLoading ? "Refreshing..." : "Refresh Data"}
+        </button>
         {products.map((product:ProductType) => (
         <div key={product.id}>
             <h2>{product.name}</h2>
