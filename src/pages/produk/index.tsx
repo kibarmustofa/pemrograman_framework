@@ -1,11 +1,53 @@
-import ProductView from "@/views/produk";
+// import { useRouter } from "next/router";
+// import ProductView from "@/views/produk";
+import { useEffect, useState } from "react";
 
-const ProdukPage = () => {
-    
+type ProductType = 
+{
+    id: string;
+    name: string;
+    price: number;
+    size: string;
+    category: string;
+}
+
+const kategori = () => {
+    // const [isLogin, setIsLogin] = useState(false);
+    // const { push } = useRouter();
+    const [products, setProducts] = useState([]);
+
+    // useEffect(() => {
+    //     if (!isLogin) {
+    //         push("/auth/login");
+    //     }
+    // },[]);
+
+    useEffect(() => {
+        fetch("/api/produk")
+            .then((response) => response.json())
+            .then((responsedata) => {
+                //console.log("Data produk:", responsedata.data);
+                setProducts(responsedata.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching produk:", error);
+            });
+    }, []);
 
     return (
-        <ProductView />
+    <div>
+        <h1>Daftar Produk</h1>
+        {products.map((product:ProductType) => (
+        <div key={product.id}>
+            <h2>{product.name}</h2>
+            <p>Harga: {product.price}</p>
+            <p>ukuran: {product.size}</p>
+            <p>kategory: {product.category}</p>
+            
+        </div>
+        ))}
+    </div>
     );
 };
 
-export default ProdukPage;
+export default kategori;

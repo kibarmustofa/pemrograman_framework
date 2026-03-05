@@ -4,7 +4,7 @@ const Navbar = () => {
   return (
     <div className={syles.navbar}>
          <div className="big">
-          <h1>navbar component</h1>
+          <h1>navbar</h1>
           </div>
     </div>
   );
