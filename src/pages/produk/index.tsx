@@ -1,65 +1,34 @@
-// import { useRouter } from "next/router";
-// import ProductView from "@/views/produk";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-
-type ProductType = 
-{
-    id: string;
-    name: string;
-    price: number;
-    size: string;
-    category: string;
-}
+import TampilanProduk from "../../views/produk";
 
 const kategori = () => {
     // const [isLogin, setIsLogin] = useState(false);
     // const { push } = useRouter();
-    const [products, setProducts] = useState<ProductType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
+    const [products, setProducts] = useState([]);
+    // console.log("products:", products);
     // useEffect(() => {
     //     if (!isLogin) {
     //         push("/auth/login");
     //     }
     // },[]);
 
-    const fetchProducts = async () => {
-        setIsLoading(true);
-        try {
-            const response = await fetch("/api/produk");
-            const responsedata = await response.json();
-            setProducts(responsedata.data);
-        } catch (error) {
-            console.error("Error fetching produk:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchProducts();
+        fetch("/api/produk")
+            .then((response) => response.json())
+            .then((responsedata) => {
+                setProducts(responsedata.data);
+                // console.log("Data produk:", responsedata.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching produk:", error);
+            });
     }, []);
 
-    const handleRefresh = () => {
-        fetchProducts();
-    };
-
     return (
-    <div>
-        <h1>Daftar Produk</h1>
-        <button onClick={handleRefresh} disabled={isLoading}>
-            {isLoading ? "Refreshing..." : "Refresh Data"}
-        </button>
-        {products.map((product:ProductType) => (
-        <div key={product.id}>
-            <h2>{product.name}</h2>
-            <p>Harga: {product.price}</p>
-            <p>ukuran: {product.size}</p>
-            <p>kategory: {product.category}</p>
-            
+        <div>
+            <TampilanProduk products={products} />
         </div>
-        ))}
-    </div>
     );
 };
 
