@@ -8,37 +8,55 @@ type ProductType = {
     category: string;
 };
 
-const TampilanProduk = ({ products }: { products: ProductType[] }) => {
+type TampilanProdukProps = {
+    products?: ProductType[];
+};
+
+const SKELETON_COUNT = 6;
+const rupiahFormatter = new Intl.NumberFormat("id-ID");
+
+const TampilanProduk = ({
+    products,
+}: TampilanProdukProps) => {
     return (
         <div className={styles.produk}>
             <h1 className={styles.produk__title}>Daftar Produk</h1>
+
             <div className={styles.produk__content}>
-                {products.length > 0 ? (
+                {products === undefined ? (
                     <>
-                        {products.map((products: ProductType) => (
-                            <div key={products.id} className={styles.produk__content__item}>
+                        {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+                            <div key={index} className={styles.produk__content__skeleton}>
+                                <div className={styles.produk__content__skeleton__image}></div>
+                                <div className={styles.produk__content__skeleton__name}></div>
+                                <div className={styles.produk__content__skeleton__category}></div>
+                                <div className={styles.produk__content__skeleton__price}></div>
+                            </div>
+                        ))}
+                    </>
+                ) : products.length > 0 ? (
+                    <>
+                        {products.map((product: ProductType, index: number) => (
+                            <div
+                                key={product.id}
+                                className={styles.produk__content__item}
+                                style={{ animationDelay: `${index * 80}ms` }}
+                            >
                                 <div className={styles.produk__content__item__image}>
-                                    <img src={products.image} alt={products.name} width={200} />
+                                    <img src={product.image} alt={product.name} width={200} />
                                 </div>
-                                <h4 className={styles.produk__content__item__name}>
-                                    {products.name}
-                                </h4>
+                                <h4 className={styles.produk__content__item__name}>{product.name}</h4>
                                 <p className={styles.produk__content__item__category}>
-                                    {products.category}
+                                    {product.category}
                                 </p>
                                 <p className={styles.produk__content__item__price}>
-                                    Rp {products.price.toLocaleString()}
+                                    Rp {rupiahFormatter.format(product.price)}
                                 </p>
                             </div>
                         ))}
                     </>
                 ) : (
-                    <div className={styles.produk__content__skeleton}>
-                        <div className={styles.produk__content__skeleton__image}></div>
-                        <div className={styles.produk__content__skeleton__name}></div>
-                        <div className={styles.produk__content__skeleton__category}></div>
-                        <div className={styles.produk__content__skeleton__price}></div>
-                    </div>
+                    <p className={styles.produk__stateText}>Belum ada data produk.</p>
                 )}
             </div>
         </div>
