@@ -1,19 +1,18 @@
+import fetcher from "@/utils/swr/fetcher";
 import { useRouter } from "next/router";
+import useSWR from "swr";
+import DetailProduk from "@/views/DetailProduct";
 
 const halamanProduk = () => {
     // const router = useRouter();
     // console.log(router); 
     const{ query } = useRouter();
+    const{data,error,isLoading} = useSWR(`/api/produk/${query.id}`,fetcher);
     return (
         <div>
-            <head>
-                <title>Halaman Produk</title>
-            </head>
-           <h1>Halaman Produk</h1>
-           <p>Produk: {query.id}</p>
-           <img src="" alt="" />
+           <DetailProduk products={isLoading ? [] : data.data} />
         </div>
         
     );
 }
-export default halamanProduk;
+export default halamanProduk; 

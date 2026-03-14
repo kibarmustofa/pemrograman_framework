@@ -1,4 +1,5 @@
 import styles from "@/pages/produk/product.module.scss";
+import Link from "next/link"; // Ditambahkan kembali agar routing dari kode sebelumnya tetap berjalan
 
 type ProductType = {
     id: string;
@@ -37,9 +38,9 @@ const TampilanProduk = ({
                 ) : products.length > 0 ? (
                     <>
                         {products.map((product: ProductType, index: number) => (
-                            <div
-                                key={product.id}
-                                className={styles.produk__content__item}
+                           
+                            <Link
+                                href={`/produk/${product.id}`} key={product.id} className={styles.produk__content__item}
                                 style={{ animationDelay: `${index * 80}ms` }}
                             >
                                 <div className={styles.produk__content__item__image}>
@@ -52,7 +53,7 @@ const TampilanProduk = ({
                                 <p className={styles.produk__content__item__price}>
                                     Rp {rupiahFormatter.format(product.price)}
                                 </p>
-                            </div>
+                            </Link>
                         ))}
                     </>
                 ) : (
