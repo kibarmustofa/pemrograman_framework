@@ -16,6 +16,7 @@ export async function retrieveProducts(CollectionName:string){
 
 export async function retrieveDataByID(CollectionName:string, id:string){
     const snapshot = await getDoc(doc(db,CollectionName, id));
-    const data = snapshot.data();
+    const rawData = snapshot.data();
+    const data = rawData ? { id: snapshot.id, ...rawData } : null;
     return data;
 }

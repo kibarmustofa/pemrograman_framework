@@ -21,7 +21,7 @@ const kategori = () => {
 
     return (
         <div>
-            <TampilanProduk products={data?.data} />
+            <TampilanProduk products={data?.data} detailBasePath="/produk/csr" />
         </div>
     );
 };

@@ -11,6 +11,7 @@ type ProductType = {
 
 type TampilanProdukProps = {
     products?: ProductType[];
+    detailBasePath?: string;
 };
 
 const SKELETON_COUNT = 6;
@@ -18,6 +19,7 @@ const rupiahFormatter = new Intl.NumberFormat("id-ID");
 
 const TampilanProduk = ({
     products,
+    detailBasePath = "/produk",
 }: TampilanProdukProps) => {
     return (
         <div className={styles.produk}>
@@ -40,7 +42,7 @@ const TampilanProduk = ({
                         {products.map((product: ProductType, index: number) => (
                            
                             <Link
-                                href={`/produk/${product.id}`} key={product.id} className={styles.produk__content__item}
+                                href={`${detailBasePath}/${product.id}`} key={product.id} className={styles.produk__content__item}
                                 style={{ animationDelay: `${index * 80}ms` }}
                             >
                                 <div className={styles.produk__content__item__image}>

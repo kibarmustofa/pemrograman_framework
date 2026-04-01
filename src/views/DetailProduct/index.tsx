@@ -2,13 +2,17 @@
 import { ProductType } from "../../types/product.type";
 import styles from "../DetailProduct/detailProduct.module.scss";
 
-const DetailProduk = ({ products }: { products: ProductType }) => {
+const DetailProduk = ({ products }: { products?: ProductType }) => {
+  if (!products) {
+    return <p>Data produk sedang dimuat atau tidak ditemukan.</p>;
+  }
+
   return (
     <>
       <h1 className={styles.title}>Detail Produk</h1>
       <div className={styles.produkdetail}>
         <div className={styles.produkdetail__image}>
-          <img src={products.image} alt={products.name} />
+          <img src={products.image && products.image} alt={products.name} />
         </div>
 
         <div className={styles.produkdetail__info}>
