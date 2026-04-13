@@ -15,9 +15,9 @@ export default function withAuth(
       });
 
       if (!token) {
-        // const loginUrl = new URL("/login", req.url);
-        const loginUrl = new URL("/login", req.url);
-        return NextResponse.redirect(loginUrl);
+        const url = new URL("/auth/login", req.url);
+        url.searchParams.set("callbackUrl", encodeURI(req.url));
+        return NextResponse.redirect(url);
       }
     }
     return middleware(req, next);

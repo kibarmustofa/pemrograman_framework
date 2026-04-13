@@ -35,6 +35,7 @@ const LoginView = () => {
   };
 
   return (
+    <>
     <div className={styles.login}>
       {/* Line 41 (disesuaikan): Menampilkan error di UI */}
       {error && <p className={styles.login__error}>{error}</p>}
@@ -85,6 +86,7 @@ const LoginView = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 
