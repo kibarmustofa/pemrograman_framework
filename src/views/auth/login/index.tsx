@@ -1,36 +1,91 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
 import styles from "./login.module.scss";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { signIn } from "next-auth/react"; // Import signIn dari NextAuth
 
-const HalamanLogin = () => {
-    const { push } = useRouter();
-    const handlerLogin = () => {
-        push("/produk?auth=true");
+const LoginView = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { push, query } = useRouter();
+  const [error, setError] = useState("");
+
+  // Mengambil callbackUrl dari query string, defaultnya ke dashboard atau home "/"
+  const callbackUrl: any = query.callbackUrl || "/";
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: event.currentTarget.email.value,
+      password: event.currentTarget.Password.value,
+      callbackUrl,
+    });
+
+    if (!res?.error) {
+      setIsLoading(false);
+      push(callbackUrl);
+    } else {
+      setIsLoading(false);
+      // Jika terjadi kesalahan (password salah / user tidak ditemukan)
+      setError(res.error === "CredentialsSignin" ? "Wrong email or password" : res.error);
     }
-    return (
-        /* Penerapan Tailwind: flex, flex-col, items-center, justify-center, min-h-screen */
-        <div className={`${styles.login} flex flex-col items-center justify-center min-h-screen bg-gray-100`}>
-            {/* Penerapan Tailwind: text-3xl, font-bold, text-blue-700, mb-4 */}
-            <h1 className="text-3xl font-bold text-blue-700 mb-4">Halaman Login</h1>
-            
-            {/* Penerapan Tailwind: bg-blue-500, hover:bg-blue-600, text-white, py-2, px-6, rounded-lg */}
-            <button 
-                onClick={handlerLogin} 
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-            >
-                Login
-            </button> 
-            
-            <div className="mt-6 text-center">
-                <h2 className="text-red-500 border border-red-500 rounded-md px-4 py-1 text-sm inline-block">
-                    Belum punya akun?
-                </h2>
-                <br />
-                <Link href="/auth/register" className="text-blue-500 hover:underline mt-2 block">
-                    Ke Halaman Register
-                </Link>
-            </div>
-        </div>
-    );
+  };
+
+  return (
+    <div className={styles.login}>
+      {/* Line 41 (disesuaikan): Menampilkan error di UI */}
+      {error && <p className={styles.login__error}>{error}</p>}
+      
+      <h1 className={styles.login__title}>Halaman Login</h1>
+      
+      <div className={styles.login__form}>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.login__form__item}>
+            <label htmlFor="email" className={styles.login__form__item_label}>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Email"
+              className={styles.login__form__item_input}
+              required
+            />
+          </div>
+
+          <div className={styles.login__form__item}>
+            <label htmlFor="Password" className={styles.login__form__item_label}>
+              Password
+            </label>
+            <input
+              type="password"
+              id="Password"
+              name="Password"
+              placeholder="Password"
+              className={styles.login__form__item_input}
+              required
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className={styles.login__form_item_button} 
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "Login"}
+          </button>
+        </form>
+
+        <p className={styles.login__form__item__text}>
+          Belum punya akun? <Link href="/auth/register">Daftar di sini</Link>
+        </p>
+      </div>
+    </div>
+  );
 };
-export default HalamanLogin;
+
+export default LoginView;
