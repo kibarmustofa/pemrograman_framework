@@ -10,6 +10,7 @@ import {
   where,
 } from "firebase/firestore";
 import app from "./firebase";
+import bcrypt from "bcrypt"; // Line 7: Tambahkan import bcrypt
 
 const db = getFirestore(app);
 
@@ -33,6 +34,7 @@ export async function signUp(
     email: string;
     fullname: string;
     password: string;
+    role?: string; // Line 31: Tambahkan field role opsional
   },
   callback: Function
 ) {
@@ -46,19 +48,30 @@ export async function signUp(
     id: doc.id,
     ...doc.data(),
   }));
-    // console.log("Query result:", data);
+
   if (data.length > 0) {
-    // user belum ada -> boleh daftar (Catatan: Logika pada gambar sepertinya terbalik)
-    // await addDoc(collection(db, "users"), userData);
-    // console.log("User registered:", data);
-    callback({
-      status: "success",
-      message: "User registered successfully",
-    });
-  } else {
+    // Jika data ditemukan, berarti email sudah terdaftar
     callback({
       status: "error",
       message: "User already exists",
     });
+  } else {
+    // Line 55 - 70: Logika enkripsi password dan simpan data ke Firestore
+    userData.password = await bcrypt.hash(userData.password, 10);
+    userData.role = "member";
+    
+    await addDoc(collection(db, "users"), userData)
+      .then(() => {
+        callback({
+          status: "success",
+          message: "User registered successfully",
+        });
+      })
+      .catch((error) => {
+        callback({
+          status: "error",
+          message: error.message,
+        });
+      });
   }
 }

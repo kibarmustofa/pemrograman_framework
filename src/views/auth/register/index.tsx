@@ -10,7 +10,7 @@ const RegisterView = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(""); // Reset error setiap kali submit
+    setError("");
     setIsLoading(true);
 
     const form = event.currentTarget;
@@ -18,6 +18,15 @@ const RegisterView = () => {
     const email = formData.get("email") as string;
     const fullname = formData.get("Fullname") as string;
     const password = formData.get("Password") as string;
+
+    if (!email) {
+      setError("Email is required");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
 
     try {
       const response = await fetch("/api/register", {
@@ -34,9 +43,9 @@ const RegisterView = () => {
         push("/auth/login");
       } else {
         setIsLoading(false);
-        const result = await response.json();
+        // Menampilkan pesan error khusus "Email already exists" jika status 400
         setError(
-          response.status === 400 ? "User already exists" : "An error occurred"
+          response.status === 400 ? "Email already exists" : "An error occurred"
         );
       }
     } catch (err) {
@@ -47,18 +56,15 @@ const RegisterView = () => {
 
   return (
     <div className={styles.register}>
+      {/* Menampilkan error di atas judul jika ada */}
+      {error && <p className={styles.register__error}>{error}</p>}
+      
       <h1 className={styles.register__title}>Halaman Register</h1>
       
       <div className={styles.register__form}>
-        {/* Tampilkan pesan error jika ada */}
-        {error && <p style={{ color: "red", marginBottom: "10px", fontSize: "14px" }}>{error}</p>}
-        
         <form onSubmit={handleSubmit}>
           <div className={styles.register__form__item}>
-            <label
-              htmlFor="email"
-              className={styles.register__form__item_label}
-            >
+            <label htmlFor="email" className={styles.register__form__item_label}>
               Email
             </label>
             <input
@@ -72,10 +78,7 @@ const RegisterView = () => {
           </div>
 
           <div className={styles.register__form__item}>
-            <label
-              htmlFor="Fullname"
-              className={styles.register__form__item_label}
-            >
+            <label htmlFor="Fullname" className={styles.register__form__item_label}>
               Fullname
             </label>
             <input
@@ -89,10 +92,7 @@ const RegisterView = () => {
           </div>
 
           <div className={styles.register__form__item}>
-            <label
-              htmlFor="Password"
-              className={styles.register__form__item_label}
-            >
+            <label htmlFor="Password" className={styles.register__form__item_label}>
               Password
             </label>
             <input
@@ -107,6 +107,7 @@ const RegisterView = () => {
 
           <button 
             type="submit" 
+            className={styles.register__form_item_button} 
             disabled={isLoading}
           >
             {isLoading ? "Loading..." : "Register"}
