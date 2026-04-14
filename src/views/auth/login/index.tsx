@@ -2,14 +2,13 @@ import Link from "next/link";
 import styles from "./login.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { signIn } from "next-auth/react"; // Import signIn dari NextAuth
+import { signIn } from "next-auth/react";
 
 const LoginView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { push, query } = useRouter();
   const [error, setError] = useState("");
 
-  // Mengambil callbackUrl dari query string, defaultnya ke dashboard atau home "/"
   const callbackUrl: any = query.callbackUrl || "/";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,15 +28,12 @@ const LoginView = () => {
       push(callbackUrl);
     } else {
       setIsLoading(false);
-      // Jika terjadi kesalahan (password salah / user tidak ditemukan)
       setError(res.error === "CredentialsSignin" ? "Wrong email or password" : res.error);
     }
   };
 
   return (
-    <>
     <div className={styles.login}>
-      {/* Line 41 (disesuaikan): Menampilkan error di UI */}
       {error && <p className={styles.login__error}>{error}</p>}
       
       <h1 className={styles.login__title}>Halaman Login</h1>
@@ -79,14 +75,24 @@ const LoginView = () => {
           >
             {isLoading ? "Loading..." : "Login"}
           </button>
+
+          {/* --- PENAMBAHAN TOMBOL GOOGLE SESUAI GAMBAR --- */}
+          <br /> <br />
+          <button
+            type="button"
+            onClick={() => signIn("google", { callbackUrl, redirect: false })}
+            className={styles.login__form_item_button}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "sign in with google"}
+          </button>
         </form>
 
         <p className={styles.login__form__item__text}>
-          Belum punya akun? <Link href="/auth/register">Daftar di sini</Link>
+          tidak punya akun? <Link href="/auth/register">Ke Halaman Register</Link>
         </p>
       </div>
     </div>
-    </>
   );
 };
 
