@@ -1,7 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google"; 
-import { signIn } from "@/utils/db/serviceFirebase";
+import GithubProvider from "next-auth/providers/github";
+import { signIn, signInWithProvider } from "@/utils/db/serviceFirebase"; // Tambahkan signInWithGoogle di sini
 import bcrypt from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
@@ -13,6 +14,10 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({ 
       clientId: process.env.GOOGLE_CLIENT_ID || "", 
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "", 
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
     }),
     CredentialsProvider({
       name: "credentials",
@@ -45,7 +50,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
- callbacks: {
+  callbacks: {
     async jwt({ token, account, user }: any) {
       if (account?.provider === "credentials" && user) {
         token.email = user.email;
@@ -53,18 +58,27 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
       }
 
-      if (account?.provider === "google") {
+      // Modifikasi bagian Google login untuk memanggil signInWithGoogle
+      if (account?.provider === "google" || account?.provider === "github") {
         const data = {
           fullname: user.name,
           email: user.email,
           image: user.image,
           type: account.provider,
         };
-        
-        token.fullname = data.fullname;
-        token.email = data.email;
-        token.image = data.image;
-        token.type = data.type;
+
+
+        // Panggil service untuk menyimpan/update data ke Firestore
+        await signInWithProvider(data, (result: any) => {
+          // Pastikan mengecek result.status sesuai dengan objek yang dikirim dari service
+          if (result.status) {
+            token.fullname = result.data.fullname;
+            token.email = result.data.email;
+            token.image = result.data.image;
+            token.type = result.data.type;
+            token.role = result.data.role; // Role sekarang diambil dari database (member/admin)
+          }
+        });
       }
       
       return token;
@@ -77,17 +91,12 @@ export const authOptions: NextAuthOptions = {
       if (token.fullname) {
         session.user.fullname = token.fullname;
       }
-      
-      
       if (token.image) {
         session.user.image = token.image;
       }
-      
       if (token.role) {
         session.user.role = token.role; 
       }
-      
-      
       if (token.type) {
         session.user.type = token.type;
       }

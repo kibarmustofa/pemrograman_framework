@@ -21,8 +21,8 @@ export function mainMiddleware(request: NextRequest) {
 }
 
 // Bagian ini yang krusial: export default withAuth
-export default withAuth(mainMiddleware, ["/produk", "/about", "/profile", "/admin"]);
+export default withAuth(mainMiddleware, ["/produk", "/about", "/profile", "/admin", "/editor"]);
 
 export const config = {
-  matcher: ["/produk", "/about", "/profile", "/admin"],
+  matcher: ["/produk", "/about", "/profile", "/admin", "/editor"],
 };

@@ -86,6 +86,17 @@ const LoginView = () => {
           >
             {isLoading ? "Loading..." : "sign in with google"}
           </button>
+          <br /> <br />
+          <button
+            type="button"
+            onClick={() => signIn("github", { callbackUrl, redirect: false })}
+            className={styles.login__form__item__button}
+            disabled={isLoading}
+            style={{ backgroundColor: "#24292e" }}
+            >
+            {isLoading ? "Loading..." : "Sign in with GitHub"}
+          </button>
+
         </form>
 
         <p className={styles.login__form__item__text}>
