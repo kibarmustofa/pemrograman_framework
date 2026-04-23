@@ -1,5 +1,6 @@
 import styles from "@/pages/produk/product.module.scss";
-import Link from "next/link"; // Ditambahkan kembali agar routing dari kode sebelumnya tetap berjalan
+import Link from "next/link";
+import Image from "next/image"; //  import Image
 
 type ProductType = {
     id: string;
@@ -40,13 +41,20 @@ const TampilanProduk = ({
                 ) : products.length > 0 ? (
                     <>
                         {products.map((product: ProductType, index: number) => (
-                           
                             <Link
-                                href={`${detailBasePath}/${product.id}`} key={product.id} className={styles.produk__content__item}
+                                href={`${detailBasePath}/${product.id}`} 
+                                key={product.id} 
+                                className={styles.produk__content__item}
                                 style={{ animationDelay: `${index * 80}ms` }}
                             >
                                 <div className={styles.produk__content__item__image}>
-                                    <img src={product.image} alt={product.name} width={200} />
+                                    {/* Modifikasi sesuai kotak merah di gambar */}
+                                    <Image 
+                                        src={product.image} 
+                                        alt={product.name} 
+                                        width={200} 
+                                        height={200} 
+                                    />
                                 </div>
                                 <h4 className={styles.produk__content__item__name}>{product.name}</h4>
                                 <p className={styles.produk__content__item__category}>
